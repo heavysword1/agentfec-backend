@@ -9,7 +9,7 @@ const FEC_BASE = 'https://api.open.fec.gov/v1';
 router.get('/', async (req, res) => {
   try {
     const API_KEY = process.env.FEC_API_KEY || 'DEMO_KEY';
-    const { type = 'expenditures', candidate_id, committee_id, election_year = '2026', limit = 20 } = req.query;
+    const { type = 'independent', candidate_id, committee_id, election_year = '2026', limit = 20 } = req.query;
     const cacheKey = `spending:${type}:${candidate_id||''}:${committee_id||''}:${election_year}:${limit}`;
     const cached = cache.get(cacheKey);
     if (cached) return res.json(cached);

@@ -11,9 +11,6 @@ router.get('/', async (req, res) => {
     const API_KEY = process.env.FEC_API_KEY || 'DEMO_KEY';
     const { candidate_id, committee_id, employer, state, min_amount, election_year = '2026', limit = 20 } = req.query;
 
-    if (!candidate_id && !committee_id && !employer) {
-      return res.status(400).json({ error: 'Provide candidate_id, committee_id, or employer to search donors' });
-    }
 
     const cacheKey = `donors:${candidate_id||''}:${committee_id||''}:${employer||''}:${state||''}:${min_amount||''}:${limit}`;
     const cached = cache.get(cacheKey);
@@ -23,7 +20,8 @@ router.get('/', async (req, res) => {
       api_key: API_KEY,
       per_page: Math.min(parseInt(limit) || 20, 50),
       sort: '-contribution_receipt_amount',
-      two_year_transaction_period: election_year
+      two_year_transaction_period: election_year,
+      min_amount: min_amount || ((!candidate_id && !committee_id && !employer) ? '5000' : undefined)
     };
     if (candidate_id) params.candidate_id = candidate_id;
     if (committee_id) params.committee_id = committee_id;
